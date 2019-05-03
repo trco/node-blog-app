@@ -20,6 +20,24 @@ app.all('*', function(req, res) {
 });
 
 // Create server
-http.createServer(app).listen(app.get('port'), function() {
-  console.log('Server listening on port http://127.0.0.1:' + app.get('port'));
-});
+var server = http.createServer(app);
+
+var boot = function () {
+  server.listen(app.get('port'), function() {
+    console.log('Server listening on port http://127.0.0.1:' + app.get('port'));
+  });
+};
+
+var shutdown = function () {
+  server.close();
+};
+
+if (require.main === module) {
+  boot();
+}
+else {
+  console.info('Running app as a module')
+  exports.boot = boot;
+  exports.shutdown = shutdown;
+  exports.port = app.get('port');
+}
