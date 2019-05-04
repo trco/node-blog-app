@@ -11,12 +11,15 @@ app.set('port', process.env.PORT || 8000); // Define port on which the server li
 app.set('views', path.join(__dirname, 'views')); // Define templates folder
 app.set('view engine', 'jade'); // Define templates engine
 
+// Set static files folder
+app.use('/public', express.static('public'));
+
 // Middleware
 
 
 // Routes
 app.all('*', function(req, res) {
-  res.render('index', {msg: 'Welcome to the Node-Blog-App!'});
+  res.render('index', {appTitle: 'Node-Blog-App'});
 });
 
 // Create server
