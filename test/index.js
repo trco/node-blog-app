@@ -1,17 +1,17 @@
-var boot = require('../app').boot;
-var shutdown = require('../app').shutdown;
-var port = require('../app').port;
-var superagent = require('superagent');
-var expect = require('expect.js');
-var seedArticles = require('../db/articles.json');
+var boot = require('../app').boot
+var shutdown = require('../app').shutdown
+var port = require('../app').port
+var superagent = require('superagent')
+var expect = require('expect.js')
+var seedArticles = require('../db/articles.json')
 
 
 // Test server boot, shutdown & homepage GET
 describe('server', function () {
 
   before(function () {
-    boot();
-  });
+    boot()
+  })
 
   describe('homepage', function () {
     // Test GET request
@@ -19,10 +19,10 @@ describe('server', function () {
       superagent
         .get('http://127.0.0.1:' + port)
         .end(function (res) {
-          expect(res.status).to.equal(200);
-          done();
-        });
-    });
+          expect(res.status).to.equal(200)
+          done()
+        })
+    })
     // Test content of homepage
     it('should contain posts', function (done) {
       // GET request to homepage
@@ -34,21 +34,21 @@ describe('server', function () {
             if (item.published) {
               expect(res.text).to.contain(
                 '<h2><a href="/articles/' + item.slug + '">' + item.title
-              );
+              )
             } else {
               expect(res.text).not.to.contain(
                 '<h2><a href="/articles/' + item.slug + '">' + item.title
-              );
+              )
             }
-          });
-          done();
-        });
-    });
-  }); // End 'homepage' test suite
+          })
+          done()
+        })
+    })
+  }) // End 'homepage' test suite
 
   describe('article page', function () {
     it('should display text', function (done) {
-      var n = seedArticles.length;
+      var n = seedArticles.length
       // GET request for each article
       seedArticles.forEach(function (item, index, list) {
         superagent
@@ -57,20 +57,20 @@ describe('server', function () {
             if (item.published) {
               expect(res.text).to.contain(
                 seedArticles[index].text
-              );
+              )
             } else {
-              expect(res.status).to.be(401);
+              expect(res.status).to.be(401)
             }
             if (index + 1 === n) {
-              done();
+              done()
             }
-          });
-      });
-    });
-  }); // End 'article page' test suite
+          })
+      })
+    })
+  }) // End 'article page' test suite
 
   after(function () {
-    shutdown();
-  });
+    shutdown()
+  })
 
-}); // End 'server' test suite
+}) // End 'server' test suite
