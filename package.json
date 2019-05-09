@@ -9,11 +9,16 @@
   "author": "Uros Trstenjak",
   "license": "ISC",
   "dependencies": {
+    "body-parser": "^1.19.0",
+    "cookie-parser": "^1.4.4",
+    "errorhandler": "^1.0.1",
     "express": "^4.16.4",
+    "express-session": "^1.16.1",
     "jade": "^1.11.0",
-    "mongodb": "^1.4.40",
-    "mongoskin": "^0.6.1",
-    "stylus": "^0.44.0"
+    "method-override": "^1.0.0",
+    "mongodb": "^3.2.3",
+    "morgan": "^1.9.1",
+    "stylus": "^0.54.5"
   },
   "devDependencies": {
     "expect.js": "^0.2.0",

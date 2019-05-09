@@ -3,20 +3,29 @@ var express = require('express')
 var http = require('http')
 var path = require('path')
 var routes = require('./routes')
+var index = require('./routes/index')
+var user = require('./routes/user')
+var article = require('./routes/article')
+
+// Empty variables
+var collections = {}
 
 // Database setup
-var mongoskin = require('mongoskin')
-var dbUrl = process.env.MONGOHQ_URL || 'mongodb://@localhost:27017/blog'
-var db = mongoskin.db(dbUrl, {safe: true})
-var collections = {
-  articles: db.collection('articles'),
-  users: db.collection('users')
-}
+var MongoClient = require('mongodb').MongoClient
+MongoClient.connect('mongodb://localhost:27017', function (error, client) {
+  if (error)
+    throw error
+  var db = client.db('blog')
+  collections = {
+    articles: db.collection('articles'),
+    users: db.collection('users')
+  }
+})
 
 // Dependencies for middleware
 var session = require('express-session')
 var logger = require('morgan')
-var errorHandler = require('errorHandler')
+var errorHandler = require('errorhandler')
 var cookieParser = require('cookie-parser')
 var bodyParser = require('body-parser')
 var methodOverride = require('method-override')
@@ -24,13 +33,6 @@ var methodOverride = require('method-override')
 // Instantiate Express.js app
 var app = express()
 app.locals.appTitle = 'Node Blog App'
-
-// Add collections to each route by attaching them to the request
-app.use(function (req, res, next) {
-  if (!collections.articles || !collections.users) return next(new Error('No collection'))
-  req.collections = collections
-  return next()
-})
 
 // App settings
 app.set('port', process.env.PORT || 8000) // Define port on which the server listens to the requests
@@ -43,8 +45,13 @@ app.use(bodyParser.json())
 app.use(bodyParser.urlencoded())
 app.use(methodOverride())
 app.use(require('stylus').middleware(__dirname + '/public'))
-// app.use('/public', express.static('public')) // Set static files folder
-app.use(express.static(path.join(__dirname, 'public'))) // Set static files folder
+app.use('/public', express.static('public')) // Set static files folder
+// Add collections to each route by attaching them to the request
+app.use(function (req, res, next) {
+  if (!collections.articles || !collections.users) return next(new Error('No collection'))
+  req.collections = collections
+  next()
+})
 
 // Error handler
 if ('development' == app.get('env')) {
@@ -52,23 +59,23 @@ if ('development' == app.get('env')) {
 }
 
 // Routes
-app.get('/', routes.index)
-app.get('/login', routes.user.login)
-app.post('/login', routes.user.authenticate)
-app.get('/logout', routes.user.logout)
-app.get('/admin', routes.article.admin)
-app.get('/post', routes.article.post)
-app.post('/post', routes.article.postArticle)
-app.get('/articles/:slug', routes.article.show)
+app.get('/', index.index)
+app.get('/login', user.login)
+app.post('/login', user.authenticate)
+app.get('/logout', user.logout)
+app.get('/admin', article.admin)
+app.get('/post', article.post)
+app.post('/post', article.postArticle)
+app.get('/articles/:slug', article.show)
 // API routes
-app.get('/api/articles', routes.article.list)
-app.post('/api/articles', routes.article.add)
-add.put('/api/articles/:id', routes.article.edit)
-add.del('/api/articles/:id', routes.article.delete)
+app.get('/api/articles', article.list)
+app.post('/api/articles', article.add)
+app.put('/api/articles/:id', article.edit)
+app.delete('/api/articles/:id', article.delete)
 
 // 404 catch-all route catching all wrong urls
 app.all('*', function(req, res) {
-  res.send(404)
+  res.sendStatus(404)
 })
 
 // Create server
