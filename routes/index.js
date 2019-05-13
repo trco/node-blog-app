@@ -5,6 +5,7 @@ exports.index = function(req, res, next) {
   req.collections.articles.find({}).toArray(function(error, articles) {
     if (error)
       return next(error)
+    // render(template, context)
     res.render('index', {articles: articles})
   })
 }

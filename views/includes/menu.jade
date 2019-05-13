@@ -2,13 +2,13 @@
   ul.nav.nav-pills
     li.nav-item
       a(class=(menu === 'index') ? 'nav-link active' : 'nav-link', href='/') Home
-    if (admin)
+    if (menu === 'admin')
       li.nav-item
         a(class=(menu === 'post') ? 'nav-link active' : 'nav-link', href='/post') Post
       li.nav-item
         a(class=(menu === 'admin') ? 'nav-link active' : 'nav-link', href='/admin') Admin
       li.nav-item
-        a(href='/logout') Logout
+        a(class='nav-link', href='/logout') Logout
     else
       li.nav-item
         a(class=(menu === 'login') ? 'nav-link active' : 'nav-link', href='/login') Log in

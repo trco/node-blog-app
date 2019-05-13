@@ -29,10 +29,10 @@ exports.postArticle = function(req, res, next) {
     publish: false,
   }
   // Insert article into the database
-  req.collections.articles.insert(article, function(error, articleResponse) {
+  req.collections.articles.insertOne(article, function(error, articleResponse) {
     if (error)
       return next(error)
-    res.render('post', {error: 'Article was added, Publish it on Admin page.'})
+    res.render('post', {error: 'Article was added. Publish it on Admin page.'})
   })
 }
 
@@ -53,7 +53,7 @@ exports.show = function(req, res, next) {
 // API handlers
 // GET articles list
 exports.list = function(req, res, next) {
-  // Get articles & convert mongoskin cursor to array
+  // Get articles & convert mongodb cursor to array
   req.collections.articles.find().toArray(function(error, articles) {
     if (error)
       return next(error)
@@ -69,7 +69,7 @@ exports.add = function(req, res, next) {
   var article = req.body.article
   article.published = false
   // Insert article into the database
-  req.collections.articles.insert(article, function(error, articleResponse) {
+  req.collections.articles.insertOne(article, function(error, articleResponse) {
     if (error)
       return next(error)
     res.send(articleResponse)
@@ -83,7 +83,7 @@ exports.edit = function(req, res, next) {
   // Get updated article values from request's body
   var article = req.body.article
   // Update article based on id in url
-  req.collections.articles.updateById(req.params.id, {$set: article},
+  req.collections.articles.updateOne({id: req.params.id}, {$set: article},
     function(error, count) {
       if (error)
         return next(error)
@@ -96,7 +96,7 @@ exports.delete = function(req, res, next) {
   if (!req.params.id)
     return next(new Error('No article ID.'))
   // Delete article based on id in url
-  req.collections.articles.removeById(req.params.id, function(error, count) {
+  req.collections.articles.deleteOne({id: req.params.id}, function(error, count) {
     if (error)
       return next(error)
     res.send({affectedCount: count})
